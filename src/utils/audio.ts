@@ -39,15 +39,18 @@ function speakSegment(text: string, lang: string) {
   synth.speak(utterance);
 }
 
-export function speakTechnique(textEs: string, speakVoice = true) {
+export function speakTechnique(nro: number, nombreEs: string, ataque?: string, speakVoice = true) {
   if (!speakVoice || !synth) return;
 
   try {
     synth.cancel(); // Stop any pending speech
-    // Only the Spanish name is spoken: most devices lack a good English voice,
-    // so an English utterance ends up mispronounced. The English name stays
-    // visible on screen as a subtitle instead.
-    speakSegment(textEs, 'es-ES');
+    // Only Spanish is spoken: most devices lack a good English voice, so an
+    // English utterance ends up mispronounced. The English name stays visible
+    // on screen as a subtitle instead.
+    const phrase = ataque
+      ? `Técnica ${nro}: ${nombreEs}. Ataque: ${ataque}`
+      : `Técnica ${nro}: ${nombreEs}`;
+    speakSegment(phrase, 'es-ES');
   } catch (err) {
     console.warn('Speech synthesis error:', err);
   }
