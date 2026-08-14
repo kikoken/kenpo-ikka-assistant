@@ -9,7 +9,7 @@ interface BottomNavProps {
 
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onChangeTab }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 h-20 bg-[#1e2229] border-t border-white/10 flex items-center justify-around px-4 pb-2 shadow-2xl">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 h-20 bg-[#1e2229] border-t border-white/10 flex items-center justify-around px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-2xl box-content">
       {/* Home / Curriculum */}
       <motion.button
         whileHover={{ y: -2 }}

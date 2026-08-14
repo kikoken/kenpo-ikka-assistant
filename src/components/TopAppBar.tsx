@@ -16,7 +16,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onBack
 }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2229] border-b border-white/10 h-16 px-4 flex items-center justify-between shadow-xl">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2229] border-b border-white/10 h-16 px-4 flex items-center justify-between shadow-xl pt-[env(safe-area-inset-top)] box-content">
       <div className="flex items-center gap-3">
         {showBack ? (
           <button

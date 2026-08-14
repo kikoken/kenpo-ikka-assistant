@@ -28,7 +28,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
   );
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-28">
+    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-[calc(7rem+env(safe-area-inset-bottom))]">
       {/* Header Bento Tile */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 bg-[#1e2229] p-6 rounded-3xl border border-white/10 shadow-xl gap-4">
         <div>

@@ -144,7 +144,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   }, [filteredTechniques]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-28">
+    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-[calc(7rem+env(safe-area-inset-bottom))]">
       {/* Search Bar Bento Style */}
       <div className="mb-5 relative">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">

@@ -19,7 +19,7 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({
   const belts = Object.values(BELT_METADATA);
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 pt-4 pb-28">
+    <div className="w-full max-w-5xl mx-auto px-4 pt-4 pb-[calc(7rem+env(safe-area-inset-bottom))]">
       {/* Hero Title in Bento Style */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}

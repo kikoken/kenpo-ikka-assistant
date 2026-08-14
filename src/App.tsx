@@ -215,7 +215,7 @@ export default function App() {
       />
 
       {/* Main View Container */}
-      <main className="pt-20 relative z-10 min-h-[calc(100vh-5rem)]">
+      <main className="pt-[calc(5rem+env(safe-area-inset-top))] relative z-10 min-h-[calc(100vh-5rem)]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}

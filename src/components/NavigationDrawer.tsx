@@ -44,7 +44,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 280 }}
-            className="relative w-80 max-w-[85vw] h-full bg-[#1e2229] border-r border-white/10 flex flex-col py-6 px-4 z-10 overflow-y-auto shadow-2xl"
+            className="relative w-80 max-w-[85vw] h-full bg-[#1e2229] border-r border-white/10 flex flex-col py-6 px-4 z-10 overflow-y-auto shadow-2xl pt-[calc(1.5rem+env(safe-area-inset-top))] pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-2 mb-6">

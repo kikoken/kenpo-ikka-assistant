@@ -213,7 +213,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   const isFav = currentTechnique ? favorites.has(currentTechnique.id) : false;
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-28">
+    <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-[calc(7rem+env(safe-area-inset-bottom))]">
       {/* Top Header Banner / Grade Badge in Bento Style */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-[#1e2229] p-5 rounded-3xl border border-white/10 shadow-xl gap-4">
         <div className="flex items-center gap-3">
