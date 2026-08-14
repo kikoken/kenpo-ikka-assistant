@@ -7,26 +7,47 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   synth = window.speechSynthesis;
 }
 
-export function speakTechnique(textEs: string, textEn?: string, speakVoice = true) {
+function pickBestVoice(voices: SpeechSynthesisVoice[], lang: string): SpeechSynthesisVoice | undefined {
+  const langPrefix = lang.split('-')[0].toLowerCase();
+  const candidates = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
+  if (candidates.length === 0) return undefined;
+
+  // Prefer an exact region match (en-US over en-GB/en-IN/etc).
+  const exact = candidates.filter(v => v.lang.toLowerCase() === lang.toLowerCase());
+  const pool = exact.length > 0 ? exact : candidates;
+
+  // Online engines (Google, Microsoft "Online"/"Natural") sound far clearer
+  // than the offline SAPI/eSpeak voices some OSes ship as the default.
+  const highQuality = pool.find(v => /google|online|natural|neural/i.test(v.name));
+  return highQuality || pool[0];
+}
+
+function speakSegment(text: string, lang: string) {
+  if (!synth) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+
+  const match = pickBestVoice(synth.getVoices(), lang);
+  if (match) {
+    utterance.voice = match;
+    utterance.lang = match.lang;
+  }
+
+  synth.speak(utterance);
+}
+
+export function speakTechnique(textEs: string, speakVoice = true) {
   if (!speakVoice || !synth) return;
 
   try {
     synth.cancel(); // Stop any pending speech
-
-    const phrase = textEn ? `${textEs}. ${textEn}` : textEs;
-    const utterance = new SpeechSynthesisUtterance(phrase);
-    utterance.lang = 'es-ES';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    // Try to pick a clear voice if available
-    const voices = synth.getVoices();
-    const esVoice = voices.find(v => v.lang.startsWith('es') || v.lang.startsWith('ES'));
-    if (esVoice) {
-      utterance.voice = esVoice;
-    }
-
-    synth.speak(utterance);
+    // Only the Spanish name is spoken: most devices lack a good English voice,
+    // so an English utterance ends up mispronounced. The English name stays
+    // visible on screen as a subtitle instead.
+    speakSegment(textEs, 'es-ES');
   } catch (err) {
     console.warn('Speech synthesis error:', err);
   }
