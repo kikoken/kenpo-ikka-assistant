@@ -1,0 +1,5 @@
+{
+  "name": "Kenpo IKKA Assistant",
+  "description": "Aplicación móvil de entrenamiento de Kenpo Karate con currículum por cinturón, biblioteca de técnicas y modo práctica interactivo con temporizador secuencial y aleatorio.",
+  "requestFramePermissions": []
+}
