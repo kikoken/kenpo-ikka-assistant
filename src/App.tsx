@@ -203,8 +203,14 @@ export default function App() {
     <div className="min-h-screen bg-[#121417] text-white font-sans relative overflow-x-hidden">
       {/* Background Subtle Red Accent Glow */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-red-900/15 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-red-600/10 blur-[160px]" />
+        <div
+          className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(127,29,29,0.15) 0%, rgba(127,29,29,0) 70%)' }}
+        />
+        <div
+          className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.10) 0%, rgba(220,38,38,0) 70%)' }}
+        />
       </div>
 
       {/* Top Header */}
