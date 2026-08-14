@@ -35,7 +35,25 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
+          // Audio isn't precached on install (404 files would bloat the initial
+          // download); instead it's cached on first play via runtimeCaching below.
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: /\/audio\/.*\.mp3$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'technique-audio',
+                expiration: {
+                  maxEntries: 450,
+                  maxAgeSeconds: 60 * 60 * 24 * 365,
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
         },
       }),
     ],

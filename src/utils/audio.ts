@@ -39,21 +39,83 @@ function speakSegment(text: string, lang: string) {
   synth.speak(utterance);
 }
 
-export function speakTechnique(nro: number, nombreEs: string, ataque?: string, speakVoice = true) {
-  if (!speakVoice || !synth) return;
+function speakTechniqueFallback(nro: number, nombreEs: string, ataque?: string, nombreEn?: string) {
+  if (!synth) return;
 
   try {
-    synth.cancel(); // Stop any pending speech
-    // Only Spanish is spoken: most devices lack a good English voice, so an
-    // English utterance ends up mispronounced. The English name stays visible
-    // on screen as a subtitle instead.
+    synth.cancel();
     const phrase = ataque
       ? `Técnica ${nro}: ${nombreEs}. Ataque: ${ataque}`
       : `Técnica ${nro}: ${nombreEs}`;
     speakSegment(phrase, 'es-ES');
+    // Web Speech English quality varies wildly by device, but it's still
+    // better than nothing for custom/imported techniques with no audio file.
+    if (nombreEn) {
+      speakSegment(nombreEn, 'en-US');
+    }
   } catch (err) {
     console.warn('Speech synthesis error:', err);
   }
+}
+
+let currentAudioEls: HTMLAudioElement[] = [];
+// Bumped on every call so stale event handlers (from audio we intentionally
+// stopped) can tell they're no longer the active playback and no-op instead
+// of firing the speech-synthesis fallback over the new audio.
+let playbackToken = 0;
+
+function stopTechniqueAudio() {
+  currentAudioEls.forEach(a => {
+    a.pause();
+    a.removeAttribute('src');
+    a.load();
+  });
+  currentAudioEls = [];
+}
+
+/**
+ * Plays the pre-generated Spanish + English narration for a curriculum
+ * technique (see scripts/gen-audio.mjs). Falls back to Web Speech Synthesis
+ * for techniques without a matching audio file, e.g. ones imported from a
+ * custom Google Sheet.
+ */
+export function speakTechnique(
+  id: number,
+  nro: number,
+  nombreEs: string,
+  ataque?: string,
+  nombreEn?: string,
+  speakVoice = true
+) {
+  if (!speakVoice) return;
+
+  stopTechniqueAudio();
+  synth?.cancel();
+
+  const token = ++playbackToken;
+  const isStale = () => token !== playbackToken;
+
+  const esAudio = new Audio(`/audio/${id}-es.mp3`);
+  currentAudioEls.push(esAudio);
+
+  esAudio.addEventListener('error', () => {
+    if (isStale()) return;
+    speakTechniqueFallback(nro, nombreEs, ataque, nombreEn);
+  });
+
+  esAudio.addEventListener('ended', () => {
+    if (isStale() || !nombreEn) return;
+    const enAudio = new Audio(`/audio/${id}-en.mp3`);
+    currentAudioEls.push(enAudio);
+    enAudio.play().catch(() => {
+      /* English clip missing or blocked; Spanish already played, skip silently */
+    });
+  });
+
+  esAudio.play().catch(() => {
+    if (isStale()) return;
+    speakTechniqueFallback(nro, nombreEs, ataque, nombreEn);
+  });
 }
 
 export function playBeep(type: 'prep' | 'start' | 'end' = 'prep', enabled = true) {

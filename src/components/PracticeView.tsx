@@ -106,7 +106,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
 
     const nextTech = currentBeltTechniques[nextIdx];
     if (nextTech) {
-      speakTechnique(nextTech.nro, nextTech.nombreEs, nextTech.ataque, settings.speakAudio);
+      speakTechnique(nextTech.id, nextTech.nro, nextTech.nombreEs, nextTech.ataque, nextTech.nombreEn, settings.speakAudio);
     }
   }, [currentBeltTechniques, currentTechnique, currentIndex, settings.orderMode, settings.preparationSeconds, settings.intervalSeconds, settings.speakAudio, onCompletedTechnique]);
 
@@ -169,7 +169,7 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
     setIsPlaying(newPlayState);
 
     if (newPlayState && currentTechnique) {
-      speakTechnique(currentTechnique.nro, currentTechnique.nombreEs, currentTechnique.ataque, settings.speakAudio);
+      speakTechnique(currentTechnique.id, currentTechnique.nro, currentTechnique.nombreEs, currentTechnique.ataque, currentTechnique.nombreEn, settings.speakAudio);
     }
   };
 
