@@ -323,10 +323,21 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.3) }}
-                      className="bg-[#1e2229] rounded-2xl p-4 border border-white/10 hover:border-red-500/40 transition-colors shadow-lg flex flex-col gap-2.5"
+                      className="bg-[#1e2229] rounded-2xl p-4 border border-white/10 hover:border-red-500/40 transition-colors shadow-lg flex flex-col gap-2.5 relative"
                     >
+                      {/* Botón Entrenar: esquina superior derecha, solo ícono */}
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => onSelectTechniqueForPractice(tech)}
+                        className="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white p-2 rounded-lg transition-colors shadow-md shadow-red-900/30"
+                        title="Entrenar esta técnica"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">fitness_center</span>
+                      </motion.button>
+
                       {/* Line 1: numero + nombre de la defensa */}
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 pr-10">
                         <div
                           className="font-black text-sm h-9 w-9 rounded-lg flex items-center justify-center shrink-0 text-black shadow-md font-mono"
                           style={{ backgroundColor: beltMeta.colorHex }}
@@ -358,20 +369,6 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                           <span className="text-gray-300 font-semibold">{tech.familia}</span>
                         </div>
                       )}
-
-                      {/* Botón Entrenar abajo a la derecha */}
-                      <div className="flex justify-end pt-1">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.92 }}
-                          onClick={() => onSelectTechniqueForPractice(tech)}
-                          className="bg-red-600 hover:bg-red-500 text-white font-black text-[11px] px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-md shadow-red-900/30 uppercase tracking-tight"
-                          title="Entrenar esta técnica"
-                        >
-                          <span className="material-symbols-outlined text-[14px]">play_arrow</span>
-                          <span>Entrenar</span>
-                        </motion.button>
-                      </div>
                     </motion.div>
                   );
                 })}
