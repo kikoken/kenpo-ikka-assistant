@@ -13,12 +13,10 @@ import { NavigationDrawer } from './components/NavigationDrawer';
 import { CurriculumView } from './components/CurriculumView';
 import { LibraryView } from './components/LibraryView';
 import { PracticeView } from './components/PracticeView';
-import { FavoritesView } from './components/FavoritesView';
 import { HistoryView } from './components/HistoryView';
 import { GoogleSheetsModal } from './components/GoogleSheetsModal';
 import { SettingsModal } from './components/SettingsModal';
 
-const FAVORITES_STORAGE_KEY = 'kenpo_favorites_v1';
 const COMPLETED_STORAGE_KEY = 'kenpo_completed_v1';
 const HISTORY_STORAGE_KEY = 'kenpo_history_v1';
 const SETTINGS_STORAGE_KEY = 'kenpo_settings_v1';
@@ -26,7 +24,7 @@ const TECHNIQUES_STORAGE_KEY = 'kenpo_custom_techniques_v1';
 
 export default function App() {
   // Navigation & Drawer states
-  const [activeTab, setActiveTab] = useState<ActiveTab>('practice'); // Default to Practice Mode as in mockups
+  const [activeTab, setActiveTab] = useState<ActiveTab>('curriculum'); // Default to Inicio (Curriculum) per UX feedback
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -46,17 +44,6 @@ export default function App() {
       console.warn('Failed to load saved techniques:', e);
     }
     return RAW_KENPO_TECHNIQUES;
-  });
-
-  // Favorites state
-  const [favorites, setFavorites] = useState<Set<number>>(() => {
-    try {
-      const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      if (saved) return new Set(JSON.parse(saved));
-    } catch (e) {
-      console.warn('Failed to load favorites:', e);
-    }
-    return new Set<number>([19, 1, 17]); // Default favorites e.g. Five Swords, Delayed Sword, Lone Kimono
   });
 
   // Completed techniques state
@@ -104,12 +91,6 @@ export default function App() {
   // Persist state changes
   useEffect(() => {
     try {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favorites)));
-    } catch (e) {}
-  }, [favorites]);
-
-  useEffect(() => {
-    try {
       localStorage.setItem(COMPLETED_STORAGE_KEY, JSON.stringify(Array.from(completedIds)));
     } catch (e) {}
   }, [completedIds]);
@@ -125,19 +106,6 @@ export default function App() {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     } catch (e) {}
   }, [settings]);
-
-  // Favorite toggle handler
-  const handleToggleFavorite = useCallback((id: number) => {
-    setFavorites(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }, []);
 
   // Completed technique handler
   const handleCompletedTechnique = useCallback((id: number) => {
@@ -244,8 +212,6 @@ export default function App() {
                 techniques={techniques}
                 initialBelt={libraryBeltFilter}
                 onSelectTechniqueForPractice={handleSelectTechniqueForPractice}
-                favorites={favorites}
-                onToggleFavorite={handleToggleFavorite}
               />
             )}
 
@@ -256,22 +222,7 @@ export default function App() {
                 settings={settings}
                 onUpdateSettings={handleUpdateSettings}
                 onRecordSession={handleRecordSession}
-                favorites={favorites}
-                onToggleFavorite={handleToggleFavorite}
                 onCompletedTechnique={handleCompletedTechnique}
-              />
-            )}
-
-            {activeTab === 'favorites' && (
-              <FavoritesView
-                techniques={techniques}
-                favorites={favorites}
-                onToggleFavorite={handleToggleFavorite}
-                onSelectTechniqueForPractice={handleSelectTechniqueForPractice}
-                onStartFavoritePractice={() => {
-                  handleUpdateSettings({ selectedBelt: 'todos', orderMode: 'azar' });
-                  setActiveTab('practice');
-                }}
               />
             )}
 
@@ -296,7 +247,6 @@ export default function App() {
         activeTab={activeTab}
         onChangeTab={setActiveTab}
         totalTechniquesCount={techniques.length}
-        favoritesCount={favorites.size}
       />
 
       {/* Google Sheets Synchronization Modal */}

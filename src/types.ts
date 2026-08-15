@@ -34,7 +34,7 @@ export interface BeltMetadata {
   order: number;
 }
 
-export type ActiveTab = 'curriculum' | 'library' | 'practice' | 'favorites' | 'history' | 'sheets';
+export type ActiveTab = 'curriculum' | 'library' | 'practice' | 'history' | 'sheets';
 
 export type PracticeOrder = 'secuencial' | 'azar';
 

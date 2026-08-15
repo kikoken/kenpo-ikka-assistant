@@ -36,9 +36,9 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </button>
         )}
 
-        {/* Kanji Icon Badge */}
-        <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center shadow-md shadow-red-900/40 shrink-0 p-1.5">
-          <img src="/kanji-fist.png" alt="拳" className="w-full h-full object-contain" />
+        {/* Escudo Ikka Badge */}
+        <div className="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-red-900/40 shrink-0 border border-white/10">
+          <img src="/escudo.jpg" alt="Escudo IKKA" className="w-full h-full object-cover" />
         </div>
 
         <div>

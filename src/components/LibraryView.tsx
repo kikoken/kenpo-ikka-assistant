@@ -7,8 +7,6 @@ interface LibraryViewProps {
   techniques: KenpoTechnique[];
   initialBelt?: string;
   onSelectTechniqueForPractice: (tech: KenpoTechnique) => void;
-  favorites: Set<number>;
-  onToggleFavorite: (id: number) => void;
 }
 
 // Helper component for smooth horizontal scrolling with buttons & drag-to-scroll
@@ -118,13 +116,14 @@ const HorizontalScrollWrapper: React.FC<{ children: React.ReactNode }> = ({ chil
 export const LibraryView: React.FC<LibraryViewProps> = ({
   techniques,
   initialBelt = 'todos',
-  onSelectTechniqueForPractice,
-  favorites,
-  onToggleFavorite
+  onSelectTechniqueForPractice
 }) => {
   const [selectedBelt, setSelectedBelt] = useState<string>(initialBelt);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
+  const activeFilterCount =
+    (selectedBelt !== 'todos' ? 1 : 0) + (selectedCategory !== 'Todos' ? 1 : 0);
 
   const filteredTechniques = useMemo(() => {
     return filterTechniques(techniques, searchQuery, selectedBelt, selectedCategory);
@@ -167,73 +166,29 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         )}
       </div>
 
-      {/* Attack Category Filter Section */}
-      <section className="mb-5 bg-[#1e2229] p-4 rounded-3xl border border-white/10 shadow-xl">
-        <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2.5 px-1">
-          Filtrar por Ataque
-        </h2>
-        <HorizontalScrollWrapper>
-          {ATTACK_CATEGORIES.map(cat => {
-            const isActive = selectedCategory === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`flex-shrink-0 font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap active:scale-95 uppercase tracking-wider ${
-                  isActive
-                    ? 'bg-red-600 text-white border border-red-400 shadow-md shadow-red-900/30'
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/5'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
-        </HorizontalScrollWrapper>
-      </section>
+      {/* Filters Toggle */}
+      <div className="mb-5 flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => setFiltersOpen(prev => !prev)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider border transition-colors ${
+            filtersOpen
+              ? 'bg-red-600/20 border-red-500/40 text-white'
+              : 'bg-[#1e2229] border-white/10 text-gray-300 hover:bg-white/10'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">tune</span>
+          <span>Filtros</span>
+          {activeFilterCount > 0 && (
+            <span className="bg-red-600 text-white rounded-full text-[10px] font-mono w-4 h-4 flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
+          <span className="material-symbols-outlined text-[16px]">
+            {filtersOpen ? 'expand_less' : 'expand_more'}
+          </span>
+        </button>
 
-      {/* Belt Filter Horizontal Tabs */}
-      <section className="mb-6 bg-[#1e2229] p-4 rounded-3xl border border-white/10 shadow-xl">
-        <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2.5 px-1">
-          Grado / Cinturón
-        </h2>
-        <HorizontalScrollWrapper>
-          <button
-            onClick={() => setSelectedBelt('todos')}
-            className={`flex-shrink-0 text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap uppercase font-bold ${
-              selectedBelt === 'todos'
-                ? 'bg-white text-black shadow-md'
-                : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/5'
-            }`}
-          >
-            Todos ({techniques.length})
-          </button>
-          {Object.values(BELT_METADATA).map(belt => {
-            const isSel = selectedBelt.toLowerCase() === belt.key.toLowerCase();
-            return (
-              <button
-                key={belt.key}
-                onClick={() => setSelectedBelt(belt.key)}
-                className={`flex-shrink-0 text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap uppercase font-bold border ${
-                  isSel
-                    ? 'border-red-500 bg-red-600/20 text-white shadow-md shadow-red-900/20'
-                    : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-              >
-                <span
-                  className="w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-sm"
-                  style={{ backgroundColor: belt.colorHex }}
-                />
-                <span>{belt.nameEs}</span>
-              </button>
-            );
-          })}
-        </HorizontalScrollWrapper>
-      </section>
-
-      {/* Techniques Count Info */}
-      <div className="flex justify-between items-center mb-4 text-xs text-gray-400 px-1 font-bold uppercase tracking-wider">
-        <span>Mostrando {filteredTechniques.length} técnicas</span>
         {(selectedBelt !== 'todos' || selectedCategory !== 'Todos' || searchQuery) && (
           <button
             onClick={() => {
@@ -241,12 +196,90 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               setSelectedCategory('Todos');
               setSearchQuery('');
             }}
-            className="text-red-400 hover:underline flex items-center gap-1 font-bold"
+            className="text-red-400 hover:underline flex items-center gap-1 font-bold text-xs uppercase tracking-wider shrink-0"
           >
             <span className="material-symbols-outlined text-[14px]">restart_alt</span>
-            Limpiar Filtros
+            Limpiar
           </button>
         )}
+      </div>
+
+      {filtersOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Belt Filter Horizontal Tabs (primary) */}
+          <section className="mb-3 bg-[#1e2229] p-4 rounded-3xl border border-white/10 shadow-xl">
+            <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2.5 px-1">
+              Grado / Cinturón
+            </h2>
+            <HorizontalScrollWrapper>
+              <button
+                onClick={() => setSelectedBelt('todos')}
+                className={`flex-shrink-0 text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap uppercase font-bold ${
+                  selectedBelt === 'todos'
+                    ? 'bg-white text-black shadow-md'
+                    : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/5'
+                }`}
+              >
+                Todos ({techniques.length})
+              </button>
+              {Object.values(BELT_METADATA).map(belt => {
+                const isSel = selectedBelt.toLowerCase() === belt.key.toLowerCase();
+                return (
+                  <button
+                    key={belt.key}
+                    onClick={() => setSelectedBelt(belt.key)}
+                    className={`flex-shrink-0 text-xs px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap uppercase font-bold border ${
+                      isSel
+                        ? 'border-red-500 bg-red-600/20 text-white shadow-md shadow-red-900/20'
+                        : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full inline-block shrink-0 shadow-sm"
+                      style={{ backgroundColor: belt.colorHex }}
+                    />
+                    <span>{belt.nameEs}</span>
+                  </button>
+                );
+              })}
+            </HorizontalScrollWrapper>
+          </section>
+
+          {/* Attack Category Filter Section (secondary, smaller hierarchy) */}
+          <section className="mb-6 bg-[#1e2229] p-3 rounded-2xl border border-white/5 shadow-md">
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 px-1">
+              Filtrar por Ataque
+            </h2>
+            <HorizontalScrollWrapper>
+              {ATTACK_CATEGORIES.map(cat => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`flex-shrink-0 font-semibold text-[11px] px-3 py-1.5 rounded-lg transition-all whitespace-nowrap active:scale-95 uppercase tracking-wide ${
+                      isActive
+                        ? 'bg-red-600 text-white border border-red-400 shadow-sm'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/5'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </HorizontalScrollWrapper>
+          </section>
+        </motion.div>
+      )}
+
+      {/* Techniques Count Info */}
+      <div className="flex justify-between items-center mb-4 text-xs text-gray-400 px-1 font-bold uppercase tracking-wider">
+        <span>Mostrando {filteredTechniques.length} técnicas</span>
       </div>
 
       {/* Techniques List grouped */}
@@ -282,7 +315,6 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               {/* List of cards */}
               <div className="flex flex-col gap-3">
                 {techList.map((tech, idx) => {
-                  const isFav = favorites.has(tech.id);
                   const displayIndex = String(tech.nro || idx + 1).padStart(2, '0');
 
                   return (
@@ -293,84 +325,53 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                       transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.3) }}
                       className="bg-[#1e2229] rounded-2xl p-4 border border-white/10 hover:border-red-500/40 transition-colors shadow-lg flex flex-col gap-2.5"
                     >
-                      {/* Line 1: numero, tipo, estrella, boton entrenar (más pequeño) */}
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          {/* Numero */}
-                          <div
-                            className="font-black text-xs h-7 w-7 rounded-lg flex items-center justify-center shrink-0 text-black shadow-md font-mono"
-                            style={{ backgroundColor: beltMeta.colorHex }}
-                          >
-                            {displayIndex}
-                          </div>
-
-                          {/* Tipo */}
-                          <span className="bg-red-600/20 text-red-400 text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-red-600/30 uppercase tracking-wider truncate">
-                            {tech.tipo || 'Defensa Personal'}
-                          </span>
+                      {/* Line 1: numero + nombre de la defensa */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className="font-black text-sm h-9 w-9 rounded-lg flex items-center justify-center shrink-0 text-black shadow-md font-mono"
+                          style={{ backgroundColor: beltMeta.colorHex }}
+                        >
+                          {displayIndex}
                         </div>
-
-                        {/* Actions: Estrella & Boton Entrenar (más pequeño) */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {/* Estrella */}
-                          <motion.button
-                            whileHover={{ scale: 1.15 }}
-                            whileTap={{ scale: 0.85 }}
-                            onClick={() => onToggleFavorite(tech.id)}
-                            className={`p-1.5 rounded-lg transition-colors border ${
-                              isFav
-                                ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30'
-                                : 'text-gray-400 hover:text-white bg-white/5 border-white/5'
-                            }`}
-                            title={isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                          >
-                            <span
-                              className="material-symbols-outlined text-[18px]"
-                              style={{ fontVariationSettings: isFav ? "'FILL' 1" : "'FILL' 0" }}
-                            >
-                              star
-                            </span>
-                          </motion.button>
-
-                          {/* Botón Entrenar (más pequeño) */}
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.92 }}
-                            onClick={() => onSelectTechniqueForPractice(tech)}
-                            className="bg-red-600 hover:bg-red-500 text-white font-black text-[11px] px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-md shadow-red-900/30 uppercase tracking-tight"
-                            title="Entrenar esta técnica"
-                          >
-                            <span className="material-symbols-outlined text-[14px]">play_arrow</span>
-                            <span>Entrenar</span>
-                          </motion.button>
+                        <div className="min-w-0">
+                          <h3 className="text-sm sm:text-base font-black text-white tracking-tight uppercase leading-snug">
+                            {tech.nombreEs}
+                          </h3>
+                          {tech.nombreEn && (
+                            <p className="text-gray-400 font-semibold text-xs sm:text-sm normal-case leading-snug">
+                              {tech.nombreEn}
+                            </p>
+                          )}
                         </div>
                       </div>
 
-                      {/* Line 2: nombre de la defensa en español / ingles */}
-                      <div>
-                        <h3 className="text-sm sm:text-base font-black text-white tracking-tight uppercase leading-snug">
-                          {tech.nombreEs}
-                          {tech.nombreEn ? (
-                            <span className="text-gray-400 font-semibold text-xs sm:text-sm normal-case">
-                              {' / '}{tech.nombreEn}
-                            </span>
-                          ) : null}
-                        </h3>
-                      </div>
-
-                      {/* Line 3: ataque de la defensa */}
+                      {/* Line 2: ataque de la defensa */}
                       <div className="text-xs text-gray-300 bg-black/30 px-3 py-1.5 rounded-xl border border-white/5">
                         <span className="text-gray-400 font-bold uppercase tracking-wider">Ataque: </span>
                         <span>{tech.ataque}</span>
                       </div>
 
-                      {/* Line 4: familia */}
+                      {/* Line 3: familia */}
                       {tech.familia && (
                         <div className="text-[11px] text-gray-400 font-medium px-1">
                           <span className="font-bold text-gray-500 uppercase tracking-wider">Familia: </span>
                           <span className="text-gray-300 font-semibold">{tech.familia}</span>
                         </div>
                       )}
+
+                      {/* Botón Entrenar abajo a la derecha */}
+                      <div className="flex justify-end pt-1">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.92 }}
+                          onClick={() => onSelectTechniqueForPractice(tech)}
+                          className="bg-red-600 hover:bg-red-500 text-white font-black text-[11px] px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-md shadow-red-900/30 uppercase tracking-tight"
+                          title="Entrenar esta técnica"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">play_arrow</span>
+                          <span>Entrenar</span>
+                        </motion.button>
+                      </div>
                     </motion.div>
                   );
                 })}

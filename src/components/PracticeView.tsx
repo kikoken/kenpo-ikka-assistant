@@ -10,8 +10,6 @@ interface PracticeViewProps {
   settings: PracticeSettings;
   onUpdateSettings: (newSettings: Partial<PracticeSettings>) => void;
   onRecordSession: (belt: string, count: number, minutes: number) => void;
-  favorites: Set<number>;
-  onToggleFavorite: (id: number) => void;
   onCompletedTechnique: (id: number) => void;
 }
 
@@ -21,8 +19,6 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   settings,
   onUpdateSettings,
   onRecordSession,
-  favorites,
-  onToggleFavorite,
   onCompletedTechnique
 }) => {
   // Filter techniques by selected belt
@@ -210,185 +206,133 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
   // Belt styling metadata
   const beltKey = currentTechnique?.cinturon?.toLowerCase() || 'naranjo';
   const beltMeta = BELT_METADATA[beltKey] || BELT_METADATA['naranjo'];
-  const isFav = currentTechnique ? favorites.has(currentTechnique.id) : false;
+
+  const displayNro = currentTechnique?.nro ? String(currentTechnique.nro).padStart(2, '0') : null;
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 pt-2 pb-[calc(7rem+env(safe-area-inset-bottom))]">
-      {/* Top Header Banner / Grade Badge in Bento Style */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-[#1e2229] p-5 rounded-3xl border border-white/10 shadow-xl gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg shadow-red-900/40">
+      {/* Compact Header: Belt select + progress index */}
+      <div className="flex items-center justify-between gap-3 mb-4 bg-[#1e2229] p-3 rounded-2xl border border-white/10 shadow-lg">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center font-black text-base text-white shadow-md shadow-red-900/40 shrink-0">
             練
           </div>
-          <div>
-            <h1 className="text-xl font-black tracking-tight text-white uppercase">
-              ENTRENAMIENTO <span className="text-red-500">ACTIVO</span>
-            </h1>
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-              Sesión de Técnicas Kenpo
-            </p>
-          </div>
+          <select
+            value={settings.selectedBelt}
+            onChange={e => onUpdateSettings({ selectedBelt: e.target.value })}
+            className="bg-transparent text-sm font-black text-yellow-500 uppercase focus:outline-none truncate max-w-[160px] sm:max-w-none"
+            title="Filtrar grado"
+          >
+            <option value="todos" className="bg-[#1e2229] text-white">Todos ({techniques.length})</option>
+            {Object.values(BELT_METADATA).map(b => (
+              <option key={b.key} value={b.key} className="bg-[#1e2229] text-white">
+                {b.nameEs}
+              </option>
+            ))}
+          </select>
         </div>
-
-        <div className="flex items-center gap-4 self-end sm:self-center">
-          <div className="text-right">
-            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Grado Seleccionado</p>
-            <p className="text-sm font-bold text-yellow-500 italic">
-              {beltMeta.nameEs}
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-2xl border-2 border-yellow-500 flex items-center justify-center bg-yellow-500/10 font-bold text-yellow-500 text-xs">
-            {currentIndex + 1}/{currentBeltTechniques.length}
-          </div>
+        <div className="w-10 h-10 rounded-xl border-2 border-yellow-500 flex items-center justify-center bg-yellow-500/10 font-bold text-yellow-500 text-xs shrink-0">
+          {currentIndex + 1}/{currentBeltTechniques.length}
         </div>
       </div>
 
-      {/* Main Bento Grid Container */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        {/* Active Practice Main Bento Card (Spans 8 cols on desktop) */}
-        <div className="md:col-span-8 bg-[#1e2229] rounded-3xl p-6 md:p-8 border border-white/10 relative overflow-hidden flex flex-col justify-between shadow-2xl min-h-[320px]">
-          {/* Watermark Kanji */}
-          <div className="absolute top-2 right-4 opacity-10 pointer-events-none select-none">
-            <div className="text-[150px] font-black leading-none text-white">武</div>
+      {/* Main Technique + Timer Card */}
+      <div className="bg-[#1e2229] rounded-3xl p-5 sm:p-6 border border-white/10 relative overflow-hidden shadow-2xl mb-4">
+        {/* Watermark Kanji */}
+        <div className="absolute top-2 right-4 opacity-10 pointer-events-none select-none">
+          <div className="text-[120px] font-black leading-none text-white">武</div>
+        </div>
+
+        <div className="relative z-10">
+          <div className="mb-3">
+            <span className="px-2.5 py-1 bg-red-600/20 text-red-500 text-[10px] font-bold rounded-full border border-red-600/30 uppercase tracking-wider inline-block">
+              {isPrepPhase ? 'PREPARACIÓN' : 'EJECUCIÓN'}
+            </span>
           </div>
 
-          <div className="relative z-10">
-            <div className="flex justify-between items-start gap-2">
-              <span className="px-3 py-1 bg-red-600/20 text-red-500 text-xs font-bold rounded-full border border-red-600/30 uppercase tracking-wider inline-block">
-                {isPrepPhase ? 'FASE PREPARACIÓN' : 'EJECUCIÓN ACTIVA'}
-              </span>
-
-              {/* Favorite Toggle */}
-              {currentTechnique && (
-                <motion.button
-                  whileHover={{ scale: 1.12 }}
-                  whileTap={{ scale: 0.88 }}
-                  onClick={() => onToggleFavorite(currentTechnique.id)}
-                  className={`p-2 rounded-2xl border transition-colors ${
-                    isFav
-                      ? 'text-yellow-400 border-yellow-500/40 bg-yellow-500/10'
-                      : 'text-gray-400 border-white/10 bg-white/5 hover:text-white'
-                  }`}
-                  title="Favorito"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentTechnique?.id || 'empty'}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-start gap-3"
+            >
+              {displayNro && (
+                <div
+                  className="font-black text-sm h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-black shadow-md font-mono mt-1"
+                  style={{ backgroundColor: beltMeta.colorHex }}
                 >
-                  <span
-                    className="material-symbols-outlined text-[22px]"
-                    style={{ fontVariationSettings: isFav ? "'FILL' 1" : "'FILL' 0" }}
-                  >
-                    star
-                  </span>
-                </motion.button>
+                  {displayNro}
+                </div>
               )}
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTechnique?.id || 'empty'}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <h2 className="text-3xl md:text-5xl font-black mt-4 text-white leading-tight uppercase tracking-tight">
+              <div className="min-w-0">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight uppercase tracking-tight">
                   {currentTechnique?.nombreEs || 'FIVE SWORDS'}
                 </h2>
                 {currentTechnique?.nombreEn && (
-                  <h3 className="text-lg md:text-xl text-gray-400 font-medium italic mt-1">
+                  <h3 className="text-sm sm:text-base text-gray-400 font-medium italic mt-0.5">
                     ({currentTechnique.nombreEn})
                   </h3>
                 )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap gap-6 items-end justify-between relative z-10">
+          <div className="mt-4 flex flex-wrap gap-4 items-center">
             <div className="flex flex-col">
               <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
-                Ataque del Agresor
+                Ataque
               </span>
-              <span className="text-base font-semibold text-white">
+              <span className="text-sm font-semibold text-white">
                 {currentTechnique?.ataque || 'Ataque frontal'}
               </span>
             </div>
-
             <div className="flex flex-col">
               <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
                 Categoría
               </span>
-              <span className="text-base font-semibold text-red-400">
+              <span className="text-sm font-semibold text-red-400">
                 {currentTechnique?.tipo || 'Defensa Personal'}
               </span>
-            </div>
-
-            <div className="ml-auto">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => {
-                  if (currentTechnique) {
-                    onCompletedTechnique(currentTechnique.id);
-                    goToNextTechnique();
-                  }
-                }}
-                className="bg-white text-black px-5 py-2.5 rounded-xl font-black hover:bg-gray-200 transition-colors uppercase tracking-tight text-xs shadow-lg"
-              >
-                Dominada / Siguiente
-              </motion.button>
             </div>
           </div>
         </div>
 
-        {/* Practice Mode & Timer Bento Card (Spans 4 cols on desktop) */}
-        <div className="md:col-span-4 bg-gradient-to-br from-red-950/40 to-[#1e2229] rounded-3xl p-6 border border-red-500/20 flex flex-col justify-between shadow-xl">
-          <div>
-            <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-4">
-              Control de Práctica
-            </h4>
-
-            {/* Circular Timer Ring */}
-            <div className="relative w-40 h-40 mx-auto my-2 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="rgba(255,255,255,0.08)"
-                  strokeWidth="6"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke={isPrepPhase ? '#eab308' : '#ef4444'}
-                  strokeWidth="7"
-                  strokeDasharray={strokeDasharray}
-                  strokeDashoffset={strokeDashoffset}
-                  strokeLinecap="round"
-                  className="transition-all duration-300 ease-linear"
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center text-center">
-                <span className="text-3xl font-black text-white font-mono tracking-tight">
-                  {isPrepPhase
-                    ? `00:0${prepTimeLeft}`
-                    : `00:${String(executionTimeLeft).padStart(2, '0')}`}
-                </span>
-                <span className="text-[9px] font-bold uppercase tracking-widest text-red-400">
-                  {isPrepPhase ? 'PREPARAR' : 'TIEMPO'}
-                </span>
-              </div>
+        {/* Timer + Transport Controls */}
+        <div className="relative z-10 mt-5 pt-5 border-t border-white/10 flex items-center gap-4">
+          <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
+              <circle
+                cx="50"
+                cy="50"
+                r="42"
+                fill="none"
+                stroke={isPrepPhase ? '#eab308' : '#ef4444'}
+                strokeWidth="9"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className="transition-all duration-300 ease-linear"
+              />
+            </svg>
+            <div className="absolute flex flex-col items-center text-center">
+              <span className="text-base font-black text-white font-mono tracking-tight">
+                {isPrepPhase
+                  ? `00:0${prepTimeLeft}`
+                  : `00:${String(executionTimeLeft).padStart(2, '0')}`}
+              </span>
             </div>
           </div>
 
-          {/* Controls */}
-          <div className="space-y-2 mt-4">
+          <div className="flex-1 flex items-center gap-2 min-w-0">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleTogglePlay}
-              className={`w-full py-3 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-colors uppercase tracking-tight shadow-lg ${
+              className={`flex-1 py-3 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-colors uppercase tracking-tight shadow-lg ${
                 isPlaying
                   ? 'bg-red-600 text-white hover:bg-red-500 shadow-red-900/40'
                   : 'bg-white text-black hover:bg-gray-200'
@@ -397,189 +341,127 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
               <span className="material-symbols-outlined text-[20px]">
                 {isPlaying ? 'pause' : 'play_arrow'}
               </span>
-              <span>{isPlaying ? 'Pausar' : 'Iniciar'}</span>
+              <span className="hidden xs:inline sm:inline">{isPlaying ? 'Pausar' : 'Iniciar'}</span>
             </motion.button>
-
-            <div className="flex gap-2">
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={goToPrevTechnique}
-                className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-xl border border-white/10 flex items-center justify-center gap-1 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[16px]">skip_previous</span>
-                <span>Anterior</span>
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                onClick={goToNextTechnique}
-                className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-xl border border-white/10 flex items-center justify-center gap-1 transition-colors"
-              >
-                <span>Siguiente</span>
-                <span className="material-symbols-outlined text-[16px]">skip_next</span>
-              </motion.button>
-            </div>
-          </div>
-        </div>
-
-        {/* Order Mode Bento Tile (Spans 4 cols on desktop) */}
-        <div className="md:col-span-4 bg-[#1e2229] rounded-3xl p-6 border border-white/10 shadow-xl flex flex-col justify-between">
-          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
-            Modo de Selección
-          </h4>
-
-          <div className="space-y-2">
-            <button
-              onClick={() => onUpdateSettings({ orderMode: 'secuencial' })}
-              className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all ${
-                settings.orderMode === 'secuencial'
-                  ? 'bg-red-600/20 border-red-500/50 text-white font-bold'
-                  : 'bg-white/5 border-white/5 text-gray-400 hover:text-white'
-              }`}
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={goToPrevTechnique}
+              className="p-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/10 transition-colors shrink-0"
+              title="Anterior"
             >
-              <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">format_list_numbered</span>
-                Secuencial
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full border-2 ${
-                  settings.orderMode === 'secuencial'
-                    ? 'border-red-500 bg-red-500'
-                    : 'border-gray-500'
-                }`}
-              />
-            </button>
-
-            <button
-              onClick={() => onUpdateSettings({ orderMode: 'azar' })}
-              className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all ${
-                settings.orderMode === 'azar'
-                  ? 'bg-red-600/20 border-red-500/50 text-white font-bold'
-                  : 'bg-white/5 border-white/5 text-gray-400 hover:text-white'
-              }`}
-            >
-              <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">shuffle</span>
-                Azar / Aleatorio
-              </span>
-              <div
-                className={`w-4 h-4 rounded-full border-2 ${
-                  settings.orderMode === 'azar'
-                    ? 'border-red-500 bg-red-500'
-                    : 'border-gray-500'
-                }`}
-              />
-            </button>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-xs">
-            <span className="text-gray-400 font-semibold">Voz de audio:</span>
-            <button
-              onClick={() => onUpdateSettings({ speakAudio: !settings.speakAudio })}
-              className={`px-3 py-1 rounded-lg text-[11px] font-bold uppercase transition-all ${
-                settings.speakAudio
-                  ? 'bg-red-600 text-white'
-                  : 'bg-white/10 text-gray-400'
-              }`}
-            >
-              {settings.speakAudio ? 'Activada' : 'Muda'}
-            </button>
-          </div>
-        </div>
-
-        {/* Up Next Bento Card (Spans 4 cols on desktop) */}
-        <div className="md:col-span-4 bg-[#1e2229] rounded-3xl p-6 border border-white/10 shadow-xl flex flex-col justify-between">
-          <div className="flex justify-between items-center mb-3">
-            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              Siguiente Técnica
-            </h4>
-            <span className="text-[10px] text-gray-400 font-mono">
-              {currentIndex + 2 > currentBeltTechniques.length ? 1 : currentIndex + 2} de {currentBeltTechniques.length}
-            </span>
-          </div>
-
-          {nextTechnique && (
-            <div
+              <span className="material-symbols-outlined text-[20px]">skip_previous</span>
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.92 }}
               onClick={goToNextTechnique}
-              className="bg-black/30 rounded-2xl p-4 flex items-center gap-4 cursor-pointer border border-white/5 hover:border-red-500/30 transition-all group"
+              className="p-3 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/10 transition-colors shrink-0"
+              title="Siguiente"
             >
-              <div className="w-12 h-12 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xl font-serif italic text-red-400 group-hover:bg-red-600 group-hover:text-white transition-all">
-                {nextTechnique.nombreEs.charAt(0)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-black text-white truncate uppercase tracking-tight group-hover:text-red-400 transition-colors">
-                  {nextTechnique.nombreEs}
-                </p>
-                <p className="text-[11px] text-gray-400 truncate">
-                  {nextTechnique.nombreEn || nextTechnique.ataque}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center text-xs">
-            <span className="text-gray-400 font-semibold">Intervalo actual:</span>
-            <div className="flex gap-1">
-              {[10, 15, 30, 45].map(sec => (
-                <button
-                  key={sec}
-                  onClick={() => {
-                    onUpdateSettings({ intervalSeconds: sec });
-                    setExecutionTimeLeft(sec);
-                  }}
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    settings.intervalSeconds === sec
-                      ? 'bg-red-600 text-white'
-                      : 'bg-white/5 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {sec}s
-                </button>
-              ))}
-            </div>
+              <span className="material-symbols-outlined text-[20px]">skip_next</span>
+            </motion.button>
           </div>
         </div>
 
-        {/* Belt Selection Bento Tile (Spans 4 cols on desktop) */}
-        <div className="md:col-span-4 bg-[#1e2229] rounded-3xl p-6 border border-white/10 shadow-xl flex flex-col justify-between">
-          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
-            Filtrar Grado
-          </h4>
-          <select
-            value={settings.selectedBelt}
-            onChange={e => onUpdateSettings({ selectedBelt: e.target.value })}
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white uppercase focus:outline-none focus:border-red-500"
+        <div className="relative z-10 mt-3">
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => {
+              if (currentTechnique) {
+                onCompletedTechnique(currentTechnique.id);
+                goToNextTechnique();
+              }
+            }}
+            className="w-full bg-white text-black px-5 py-2.5 rounded-xl font-black hover:bg-gray-200 transition-colors uppercase tracking-tight text-xs shadow-lg"
           >
-            <option value="todos">Todos los Grados ({techniques.length})</option>
-            {Object.values(BELT_METADATA).map(b => (
-              <option key={b.key} value={b.key}>
-                {b.nameEs}
-              </option>
-            ))}
-          </select>
-          <div className="mt-4 pt-3 border-t border-white/5 text-[11px] text-gray-400">
-            Cinturón en práctica: <span className="font-bold text-yellow-500">{beltMeta.nameEs}</span>
-          </div>
+            Dominada / Siguiente
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Sequence/Random selector + Interval, compact row */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex-1 bg-[#1e2229] rounded-2xl p-3 border border-white/10 shadow-md flex items-center gap-2">
+          <button
+            onClick={() => onUpdateSettings({ orderMode: 'secuencial' })}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${
+              settings.orderMode === 'secuencial'
+                ? 'bg-red-600/20 border border-red-500/50 text-white'
+                : 'bg-white/5 border border-white/5 text-gray-400 hover:text-white'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">format_list_numbered</span>
+            Secuencial
+          </button>
+          <button
+            onClick={() => onUpdateSettings({ orderMode: 'azar' })}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${
+              settings.orderMode === 'azar'
+                ? 'bg-red-600/20 border border-red-500/50 text-white'
+                : 'bg-white/5 border border-white/5 text-gray-400 hover:text-white'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">shuffle</span>
+            Azar
+          </button>
         </div>
 
-        {/* Summary Inventory Bento Row (Spans 12 cols on desktop) */}
-        <div className="md:col-span-12 bg-[#1e2229] rounded-3xl p-6 border border-white/10 shadow-xl">
-          <h4 className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest">
-            Resumen de Inventario de Técnicas
-          </h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-black/20 p-3.5 rounded-2xl border border-white/5">
-              <p className="text-[10px] text-gray-500 uppercase font-bold">Grado Actual</p>
-              <p className="text-sm font-bold text-white mt-0.5">{beltMeta.nameEs}</p>
-            </div>
-            <div className="bg-black/20 p-3.5 rounded-2xl border border-white/5">
-              <p className="text-[10px] text-gray-500 uppercase font-bold">Total Técnicas</p>
-              <p className="text-sm font-bold text-white mt-0.5">{currentBeltTechniques.length} Registradas</p>
-            </div>
-            <div className="bg-black/20 p-3.5 rounded-2xl border border-white/5">
-              <p className="text-[10px] text-gray-500 uppercase font-bold">Completadas Sesión</p>
-              <p className="text-sm font-bold text-red-500 mt-0.5">{sessionCompletedCount} Dominadas</p>
-            </div>
+        <div className="flex-1 bg-[#1e2229] rounded-2xl p-3 border border-white/10 shadow-md flex items-center justify-between gap-2">
+          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wide shrink-0">Intervalo:</span>
+          <div className="flex gap-1">
+            {[10, 15, 30, 45].map(sec => (
+              <button
+                key={sec}
+                onClick={() => {
+                  onUpdateSettings({ intervalSeconds: sec });
+                  setExecutionTimeLeft(sec);
+                }}
+                className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
+                  settings.intervalSeconds === sec
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:text-white'
+                }`}
+              >
+                {sec}s
+              </button>
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* Up Next - slim row */}
+      {nextTechnique && (
+        <div
+          onClick={goToNextTechnique}
+          className="mb-4 bg-[#1e2229] rounded-2xl p-3 flex items-center gap-3 cursor-pointer border border-white/10 hover:border-red-500/30 transition-all group shadow-md"
+        >
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest shrink-0">Siguiente</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-black text-white truncate uppercase tracking-tight group-hover:text-red-400 transition-colors">
+              {nextTechnique.nombreEs}
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-[18px] text-gray-500 group-hover:text-red-400 transition-colors shrink-0">
+            chevron_right
+          </span>
+        </div>
+      )}
+
+      {/* Voice toggle + Summary - slim row */}
+      <div className="flex items-center gap-2 text-xs">
+        <button
+          onClick={() => onUpdateSettings({ speakAudio: !settings.speakAudio })}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all shrink-0 ${
+            settings.speakAudio ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-400'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[14px]">
+            {settings.speakAudio ? 'volume_up' : 'volume_off'}
+          </span>
+          Voz
+        </button>
+        <div className="flex-1 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5 text-[11px] text-gray-400 text-center">
+          <span className="font-bold text-red-500">{sessionCompletedCount}</span> dominadas esta sesión
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@ interface NavigationDrawerProps {
   activeTab: ActiveTab;
   onChangeTab: (tab: ActiveTab) => void;
   totalTechniquesCount: number;
-  favoritesCount: number;
 }
 
 export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
@@ -16,8 +15,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
   onClose,
   activeTab,
   onChangeTab,
-  totalTechniquesCount,
-  favoritesCount
+  totalTechniquesCount
 }) => {
   const handleSelect = (tab: ActiveTab) => {
     onChangeTab(tab);
@@ -111,27 +109,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
               >
                 <span className="material-symbols-outlined text-[20px]">fitness_center</span>
                 <span>Modo Práctica</span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => handleSelect('favorites')}
-                className={`flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-colors ${
-                  activeTab === 'favorites'
-                    ? 'bg-red-600 text-white font-black shadow-lg shadow-red-900/30 border border-red-400'
-                    : 'text-gray-300 hover:bg-white/5 border border-transparent'
-                }`}
-              >
-                <div className="flex items-center gap-3.5">
-                  <span className="material-symbols-outlined text-[20px]">grade</span>
-                  <span>Favoritos</span>
-                </div>
-                {favoritesCount > 0 && (
-                  <span className="px-2.5 py-0.5 text-[10px] font-black rounded-full bg-yellow-500 text-black">
-                    {favoritesCount}
-                  </span>
-                )}
               </motion.button>
 
               <motion.button
