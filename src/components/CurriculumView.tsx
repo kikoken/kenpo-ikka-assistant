@@ -89,21 +89,21 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.92 }}
                     onClick={() => onSelectBeltForLibrary(belt.key)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors shadow-md"
+                    className="h-9 flex items-center justify-center gap-1.5 px-3 rounded-xl text-xs font-black bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors shadow-md"
                     title="Ver lista de técnicas"
                   >
-                    <span className="material-symbols-outlined text-[18px]">menu_book</span>
-                    <span className="font-mono text-xs">{totalCount}</span>
+                    <span className="material-symbols-outlined text-[18px] leading-none">menu_book</span>
+                    <span className="font-mono text-xs leading-none">{totalCount}</span>
                   </motion.button>
 
                   <motion.button
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.92 }}
                     onClick={() => onStartPracticeBelt(belt.key, 'secuencial')}
-                    className="p-2 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors shadow-md shadow-red-900/30"
+                    className="h-9 w-9 shrink-0 flex items-center justify-center rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors shadow-md shadow-red-900/30"
                     title="Práctica"
                   >
-                    <span className="material-symbols-outlined text-[18px]">fitness_center</span>
+                    <span className="material-symbols-outlined text-[18px] leading-none">fitness_center</span>
                   </motion.button>
                 </div>
               </div>

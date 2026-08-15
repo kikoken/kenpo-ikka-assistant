@@ -244,49 +244,49 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
 
         <div className="relative z-10">
-          <div className="flex justify-end mb-3">
+          <div className="flex items-start justify-between gap-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTechnique?.id || 'empty'}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-start gap-3 min-w-0 flex-1"
+              >
+                {displayNro && (
+                  <div
+                    className="font-black text-sm h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-black shadow-md font-mono mt-1"
+                    style={{ backgroundColor: beltMeta.colorHex }}
+                  >
+                    {displayNro}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight uppercase tracking-tight">
+                    {currentTechnique?.nombreEs || 'FIVE SWORDS'}
+                  </h2>
+                  {currentTechnique?.nombreEn && (
+                    <h3 className="text-sm sm:text-base text-gray-400 font-medium italic mt-0.5">
+                      ({currentTechnique.nombreEn})
+                    </h3>
+                  )}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
             <button
               onClick={() => onUpdateSettings({ speakAudio: !settings.speakAudio })}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all shrink-0 ${
+              className={`h-10 w-10 shrink-0 flex items-center justify-center rounded-xl transition-all ${
                 settings.speakAudio ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-400'
               }`}
+              title="Voz"
             >
-              <span className="material-symbols-outlined text-[14px]">
+              <span className="material-symbols-outlined text-[20px]">
                 {settings.speakAudio ? 'volume_up' : 'volume_off'}
               </span>
-              Voz
             </button>
           </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentTechnique?.id || 'empty'}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-start gap-3"
-            >
-              {displayNro && (
-                <div
-                  className="font-black text-sm h-10 w-10 rounded-xl flex items-center justify-center shrink-0 text-black shadow-md font-mono mt-1"
-                  style={{ backgroundColor: beltMeta.colorHex }}
-                >
-                  {displayNro}
-                </div>
-              )}
-              <div className="min-w-0">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight uppercase tracking-tight">
-                  {currentTechnique?.nombreEs || 'FIVE SWORDS'}
-                </h2>
-                {currentTechnique?.nombreEn && (
-                  <h3 className="text-sm sm:text-base text-gray-400 font-medium italic mt-0.5">
-                    ({currentTechnique.nombreEn})
-                  </h3>
-                )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
 
           <div className="mt-4 flex flex-col">
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
@@ -297,51 +297,48 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             </span>
           </div>
 
-          {/* Sequence/Random selector (left) + Interval (right) */}
+          {/* Sequence/Random icon toggle (left) + Interval select (right) */}
           <div className="mt-4 flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-1.5 bg-black/20 rounded-xl p-1 border border-white/5">
+            <div className="flex items-center gap-1 shrink-0 bg-black/20 rounded-xl p-1 border border-white/5">
               <button
                 onClick={() => onUpdateSettings({ orderMode: 'secuencial' })}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all ${
+                className={`h-9 w-9 flex items-center justify-center rounded-lg transition-all ${
                   settings.orderMode === 'secuencial'
                     ? 'bg-red-600/20 border border-red-500/50 text-white'
                     : 'border border-transparent text-gray-400 hover:text-white'
                 }`}
+                title="Secuencial"
               >
-                <span className="material-symbols-outlined text-[15px]">format_list_numbered</span>
-                Secuencial
+                <span className="material-symbols-outlined text-[18px]">format_list_numbered</span>
               </button>
               <button
                 onClick={() => onUpdateSettings({ orderMode: 'azar' })}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all ${
+                className={`h-9 w-9 flex items-center justify-center rounded-lg transition-all ${
                   settings.orderMode === 'azar'
                     ? 'bg-red-600/20 border border-red-500/50 text-white'
                     : 'border border-transparent text-gray-400 hover:text-white'
                 }`}
+                title="Azar"
               >
-                <span className="material-symbols-outlined text-[15px]">shuffle</span>
-                Azar
+                <span className="material-symbols-outlined text-[18px]">shuffle</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0 bg-black/20 rounded-xl p-1 border border-white/5">
+            <select
+              value={settings.intervalSeconds}
+              onChange={e => {
+                const sec = Number(e.target.value);
+                onUpdateSettings({ intervalSeconds: sec });
+                setExecutionTimeLeft(sec);
+              }}
+              className="flex-1 h-9 bg-black/20 border border-white/5 rounded-xl px-3 text-xs font-bold text-white focus:outline-none focus:border-red-500"
+            >
               {[10, 15, 30, 45].map(sec => (
-                <button
-                  key={sec}
-                  onClick={() => {
-                    onUpdateSettings({ intervalSeconds: sec });
-                    setExecutionTimeLeft(sec);
-                  }}
-                  className={`px-2 py-2 rounded-lg text-[10px] font-bold ${
-                    settings.intervalSeconds === sec
-                      ? 'bg-red-600 text-white'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {sec}s
-                </button>
+                <option key={sec} value={sec} className="bg-[#1e2229] text-white">
+                  Intervalo: {sec}s
+                </option>
               ))}
-            </div>
+            </select>
           </div>
         </div>
 
