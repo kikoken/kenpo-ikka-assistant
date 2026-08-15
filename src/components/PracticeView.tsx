@@ -244,10 +244,18 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
 
         <div className="relative z-10">
-          <div className="mb-3">
-            <span className="px-2.5 py-1 bg-red-600/20 text-red-500 text-[10px] font-bold rounded-full border border-red-600/30 uppercase tracking-wider inline-block">
-              {isPrepPhase ? 'PREPARACIÓN' : 'EJECUCIÓN'}
-            </span>
+          <div className="flex justify-end mb-3">
+            <button
+              onClick={() => onUpdateSettings({ speakAudio: !settings.speakAudio })}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all shrink-0 ${
+                settings.speakAudio ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-400'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {settings.speakAudio ? 'volume_up' : 'volume_off'}
+              </span>
+              Voz
+            </button>
           </div>
 
           <AnimatePresence mode="wait">
@@ -280,22 +288,59 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-4 flex flex-wrap gap-4 items-center">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
-                Ataque
-              </span>
-              <span className="text-sm font-semibold text-white">
-                {currentTechnique?.ataque || 'Ataque frontal'}
-              </span>
+          <div className="mt-4 flex flex-col">
+            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+              Ataque
+            </span>
+            <span className="text-sm font-semibold text-white">
+              {currentTechnique?.ataque || 'Ataque frontal'}
+            </span>
+          </div>
+
+          {/* Sequence/Random selector (left) + Interval (right) */}
+          <div className="mt-4 flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-1.5 bg-black/20 rounded-xl p-1 border border-white/5">
+              <button
+                onClick={() => onUpdateSettings({ orderMode: 'secuencial' })}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all ${
+                  settings.orderMode === 'secuencial'
+                    ? 'bg-red-600/20 border border-red-500/50 text-white'
+                    : 'border border-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">format_list_numbered</span>
+                Secuencial
+              </button>
+              <button
+                onClick={() => onUpdateSettings({ orderMode: 'azar' })}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wide transition-all ${
+                  settings.orderMode === 'azar'
+                    ? 'bg-red-600/20 border border-red-500/50 text-white'
+                    : 'border border-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[15px]">shuffle</span>
+                Azar
+              </button>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">
-                Categoría
-              </span>
-              <span className="text-sm font-semibold text-red-400">
-                {currentTechnique?.tipo || 'Defensa Personal'}
-              </span>
+
+            <div className="flex items-center gap-1 shrink-0 bg-black/20 rounded-xl p-1 border border-white/5">
+              {[10, 15, 30, 45].map(sec => (
+                <button
+                  key={sec}
+                  onClick={() => {
+                    onUpdateSettings({ intervalSeconds: sec });
+                    setExecutionTimeLeft(sec);
+                  }}
+                  className={`px-2 py-2 rounded-lg text-[10px] font-bold ${
+                    settings.intervalSeconds === sec
+                      ? 'bg-red-600 text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {sec}s
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -379,56 +424,6 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
       </div>
 
-      {/* Sequence/Random selector + Interval, compact row */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <div className="flex-1 bg-[#1e2229] rounded-2xl p-3 border border-white/10 shadow-md flex items-center gap-2">
-          <button
-            onClick={() => onUpdateSettings({ orderMode: 'secuencial' })}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${
-              settings.orderMode === 'secuencial'
-                ? 'bg-red-600/20 border border-red-500/50 text-white'
-                : 'bg-white/5 border border-white/5 text-gray-400 hover:text-white'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[15px]">format_list_numbered</span>
-            Secuencial
-          </button>
-          <button
-            onClick={() => onUpdateSettings({ orderMode: 'azar' })}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${
-              settings.orderMode === 'azar'
-                ? 'bg-red-600/20 border border-red-500/50 text-white'
-                : 'bg-white/5 border border-white/5 text-gray-400 hover:text-white'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[15px]">shuffle</span>
-            Azar
-          </button>
-        </div>
-
-        <div className="flex-1 bg-[#1e2229] rounded-2xl p-3 border border-white/10 shadow-md flex items-center justify-between gap-2">
-          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wide shrink-0">Intervalo:</span>
-          <div className="flex gap-1">
-            {[10, 15, 30, 45].map(sec => (
-              <button
-                key={sec}
-                onClick={() => {
-                  onUpdateSettings({ intervalSeconds: sec });
-                  setExecutionTimeLeft(sec);
-                }}
-                className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
-                  settings.intervalSeconds === sec
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/5 text-gray-400 hover:text-white'
-                }`}
-              >
-                {sec}s
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Up Next - slim row */}
       {nextTechnique && (
         <div
@@ -447,22 +442,9 @@ export const PracticeView: React.FC<PracticeViewProps> = ({
         </div>
       )}
 
-      {/* Voice toggle + Summary - slim row */}
-      <div className="flex items-center gap-2 text-xs">
-        <button
-          onClick={() => onUpdateSettings({ speakAudio: !settings.speakAudio })}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase transition-all shrink-0 ${
-            settings.speakAudio ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-400'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[14px]">
-            {settings.speakAudio ? 'volume_up' : 'volume_off'}
-          </span>
-          Voz
-        </button>
-        <div className="flex-1 bg-black/20 px-3 py-1.5 rounded-lg border border-white/5 text-[11px] text-gray-400 text-center">
-          <span className="font-bold text-red-500">{sessionCompletedCount}</span> dominadas esta sesión
-        </div>
+      {/* Summary - slim row */}
+      <div className="bg-black/20 px-3 py-1.5 rounded-lg border border-white/5 text-[11px] text-gray-400 text-center">
+        <span className="font-bold text-red-500">{sessionCompletedCount}</span> dominadas esta sesión
       </div>
     </div>
   );

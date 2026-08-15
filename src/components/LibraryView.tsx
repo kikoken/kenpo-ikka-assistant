@@ -330,10 +330,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                         whileHover={{ scale: 1.08 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onSelectTechniqueForPractice(tech)}
-                        className="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white p-2 rounded-lg transition-colors shadow-md shadow-red-900/30"
+                        className="absolute top-3 right-3 h-9 w-9 rounded-lg bg-red-600 hover:bg-red-500 text-white flex items-center justify-center transition-colors shadow-md shadow-red-900/30"
                         title="Entrenar esta técnica"
                       >
-                        <span className="material-symbols-outlined text-[18px]">fitness_center</span>
+                        <span className="material-symbols-outlined text-[14px]">fitness_center</span>
                       </motion.button>
 
                       {/* Line 1: numero + nombre de la defensa */}

@@ -67,12 +67,12 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({
                 style={{ backgroundColor: belt.colorHex }}
               />
 
-              <div className="pl-3 mb-4">
+              <div className="pl-3 mb-4 flex items-start justify-between gap-3">
                 {/* Belt Header: Color Name & Kyu/Dan (clickable -> Biblioteca del grado) */}
                 <button
                   type="button"
                   onClick={() => onSelectBeltForLibrary(belt.key)}
-                  className="text-left mb-3 group/title"
+                  className="text-left group/title min-w-0"
                   title="Ver biblioteca de este grado"
                 >
                   <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase group-hover/title:text-red-400 transition-colors">
@@ -83,34 +83,34 @@ export const CurriculumView: React.FC<CurriculumViewProps> = ({
                   </span>
                 </button>
 
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  {belt.description}
-                </p>
+                {/* Technique count (-> Biblioteca) + Práctica icon button, top-right aligned */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <motion.button
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => onSelectBeltForLibrary(belt.key)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors shadow-md"
+                    title="Ver lista de técnicas"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">menu_book</span>
+                    <span className="font-mono text-xs">{totalCount}</span>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => onStartPracticeBelt(belt.key, 'secuencial')}
+                    className="p-2 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors shadow-md shadow-red-900/30"
+                    title="Práctica"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">fitness_center</span>
+                  </motion.button>
+                </div>
               </div>
 
-              {/* Action Row: Technique count (-> Biblioteca) + Práctica button */}
-              <div className="pl-3 pt-4 border-t border-white/10 flex items-center gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => onSelectBeltForLibrary(belt.key)}
-                  className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl text-xs font-black bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors shadow-md shrink-0"
-                  title="Ver lista de técnicas"
-                >
-                  <span className="material-symbols-outlined text-[18px]">menu_book</span>
-                  <span className="font-mono text-xs">{totalCount}</span>
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onStartPracticeBelt(belt.key, 'secuencial')}
-                  className="flex-1 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black uppercase transition-colors flex items-center justify-center gap-2 shadow-md shadow-red-900/30 tracking-wider"
-                >
-                  <span className="material-symbols-outlined text-[18px]">fitness_center</span>
-                  <span>Práctica</span>
-                </motion.button>
-              </div>
+              <p className="pl-3 text-xs text-gray-400 leading-relaxed">
+                {belt.description}
+              </p>
             </motion.div>
           );
         })}
