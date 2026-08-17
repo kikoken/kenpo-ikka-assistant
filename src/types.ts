@@ -8,7 +8,8 @@ export type BeltLevel =
   | 'café-3kyu'
   | 'café-2kyu'
   | 'café-1kyu'
-  | 'negro';
+  | 'negro'
+  | 'segundo-dan';
 
 export interface KenpoTechnique {
   id: number;

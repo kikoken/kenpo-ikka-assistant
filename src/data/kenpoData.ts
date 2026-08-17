@@ -10,7 +10,8 @@ export const BELT_DEGREES: Record<string, string> = {
   'café-3kyu': '3er Kyu',
   'café-2kyu': '2do Kyu',
   'café-1kyu': '1er Kyu',
-  negro: '1er Dan'
+  negro: '1er Dan',
+  'segundo-dan': '2do Dan'
 };
 
 export const BELT_METADATA: Record<string, BeltMetadata> = {
@@ -113,6 +114,16 @@ export const BELT_METADATA: Record<string, BeltMetadata> = {
     badgeText: '#f8fafc',
     description: 'Dominio y maestría del sistema Kenpo Karate (1er Dan).',
     order: 10
+  },
+  'segundo-dan': {
+    key: 'segundo-dan',
+    nameEs: 'Segundo Dan',
+    nameEn: '2nd Degree Black Belt',
+    colorHex: '#212121',
+    badgeBg: '#334155',
+    badgeText: '#f8fafc',
+    description: 'Profundización del sistema Kenpo Karate sobre la base de cinturón azul (2do Dan).',
+    order: 11
   }
 };
 
@@ -327,7 +338,32 @@ export const RAW_KENPO_TECHNIQUES: KenpoTechnique[] = [
   { id: 199, nro: 21, nombreEs: 'DORMIDOR (AVANZADO)', nombreEn: 'SLEEPER (ADV)', ataque: 'Ataque de puño derecho', tipo: 'Defensa Personal', cinturon: 'negro', categoria: 'Puños', familia: 'Maestría 1er Dan' },
   { id: 200, nro: 22, nombreEs: 'ABRAZOS ESPIRALES (AVANZADO)', nombreEn: 'SPIRALING TWIG (ADV)', ataque: 'Abrazando la cintura por atras', tipo: 'Defensa Personal', cinturon: 'negro', categoria: 'Agarres y Abrazos', familia: 'Maestría 1er Dan' },
   { id: 201, nro: 23, nombreEs: 'CRUZ DE DESTRUCCION (AVANZADO)', nombreEn: 'CROSS OF DESTRUCTION (ADV)', ataque: 'Tomada de ambos hombros por atras', tipo: 'Defensa Personal', cinturon: 'negro', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 1er Dan' },
-  { id: 202, nro: 24, nombreEs: 'VUELO DE LIBERTAD (AVANZADO)', nombreEn: 'FLIGHT TO FREEDOM (ADV)', ataque: 'Tomando por atras la mano derecha torciéndola', tipo: 'Defensa Personal', cinturon: 'negro', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 1er Dan' }
+  { id: 202, nro: 24, nombreEs: 'VUELO DE LIBERTAD (AVANZADO)', nombreEn: 'FLIGHT TO FREEDOM (ADV)', ataque: 'Tomando por atras la mano derecha torciéndola', tipo: 'Defensa Personal', cinturon: 'negro', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 1er Dan' },
+
+  { id: 203, nro: 1, nombreEs: 'MANOS PIDIENDO (AVANZADO)', nombreEn: 'BEGGING HANDS (ADV)', ataque: 'Tomando ambas manos', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Tomadas', familia: 'Maestría 2do Dan' },
+  { id: 204, nro: 2, nombreEs: 'CUÑA EMPUJANDO (AVANZADO)', nombreEn: 'THRUSTING WEDGE (ADV)', ataque: 'Intento tomada de oso', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Empujones', familia: 'Maestría 2do Dan' },
+  { id: 205, nro: 3, nombreEs: 'ALAS BRILLANDO (AVANZADO)', nombreEn: 'FLASHING WINGS (ADV)', ataque: 'Golpe de puño derecho', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Puños', familia: 'Maestría 2do Dan' },
+  { id: 206, nro: 4, nombreEs: 'PENDULO ABRAZANDO (AVANZADO)', nombreEn: 'HUGGING PENDULUM (ADV)', ataque: 'Golpe de pierna derecha', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Patadas', familia: 'Maestría 2do Dan' },
+  { id: 207, nro: 5, nombreEs: 'DEVASTADOR REPITIENDOSE (AVANZADO)', nombreEn: 'REPEATED DEVASTATION (ADV)', ataque: 'Full nelson', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Agarres y Abrazos', familia: 'Maestría 2do Dan' },
+  { id: 208, nro: 6, nombreEs: 'ALAS ENGANCHADAS (AVANZADO)', nombreEn: 'ENTANGLED WING (ADV)', ataque: 'Palanca de mano derecha', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 2do Dan' },
+  { id: 209, nro: 7, nombreEs: 'DESAFIANDO LA TORMENTA (AVANZADO)', nombreEn: 'DEFYING THE STORM (ADV)', ataque: 'Ataque de baston derecho', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Armas', familia: 'Maestría 2do Dan' },
+  { id: 210, nro: 8, nombreEs: 'BOLADORA ARRASTRANDO (AVANZADO)', nombreEn: 'RAKING MACE (ADV)', ataque: 'Tomada ambas solapas', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Tomadas', familia: 'Maestría 2do Dan' },
+  { id: 211, nro: 9, nombreEs: 'TALON SACUDIENDOSE (AVANZADO)', nombreEn: 'SNAKING TALON (ADV)', ataque: 'Intento tomada de oso', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Empujones', familia: 'Maestría 2do Dan' },
+  { id: 212, nro: 10, nombreEs: 'ESCUDO BOLEADOR (AVANZADO)', nombreEn: 'SHIELD AND MACE (ADV)', ataque: 'Golpe de puño derecho', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Puños', familia: 'Maestría 2do Dan' },
+  { id: 213, nro: 11, nombreEs: 'PENDULO RETROCEDIENDO (AVANZADO)', nombreEn: 'RETREATING PENDULUM (ADV)', ataque: 'Ataque de pierna derecha', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Patadas', familia: 'Maestría 2do Dan' },
+  { id: 214, nro: 12, nombreEs: 'FLECHA TROPEZANDO (AVANZADO)', nombreEn: 'TRIPPING ARROW (ADV)', ataque: 'Tomada de oso', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Agarres y Abrazos', familia: 'Maestría 2do Dan' },
+  { id: 215, nro: 13, nombreEs: 'CRUZ CALLENDOSE (AVANZADO)', nombreEn: 'FALLEN CROSS (ADV)', ataque: 'Tomando el hombro con ambas manos por atras', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 2do Dan' },
+  { id: 216, nro: 14, nombreEs: 'TORMENTA REGRESANDO (AVANZADO)', nombreEn: 'RETURNING STORM (ADV)', ataque: 'Ataque de baston derecho doble pasada', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Armas', familia: 'Maestría 2do Dan' },
+  { id: 217, nro: 16, nombreEs: 'RAMAS CRUZANDOSE (AVANZADO)', nombreEn: 'CROSSED TWIGS (ADV)', ataque: 'Tomadas ambas manos por atras', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Tomadas', familia: 'Maestría 2do Dan' },
+  { id: 218, nro: 17, nombreEs: 'GIRO DE DESTINO (AVANZADO)', nombreEn: 'TWIST OF FATE (ADV)', ataque: 'A empujar con ambas manos', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Empujones', familia: 'Maestría 2do Dan' },
+  { id: 219, nro: 18, nombreEs: 'BOLEADORA BRILLANDO (AVANZADO)', nombreEn: 'FLASHING MACE (ADV)', ataque: 'Ataque de puño derecho a la cara', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Puños', familia: 'Maestría 2do Dan' },
+  { id: 220, nro: 19, nombreEs: 'REGALO DEL DESTINO (AVANZADO)', nombreEn: 'GIFT OF DESTINY (ADV)', ataque: 'Tomada de mano derecha a la cara', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Agarres y Abrazos', familia: 'Maestría 2do Dan' },
+  { id: 221, nro: 20, nombreEs: 'ALAS DE SEDA (AVANZADO)', nombreEn: 'WINGS OF SILK (ADV)', ataque: 'Enganchando brazos por atras', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Estrangulaciones y Candados', familia: 'Maestría 2do Dan' },
+  { id: 222, nro: 21, nombreEs: 'TALON AGARRANDO (AVANZADO)', nombreEn: 'GRIPPING TALON (ADV)', ataque: 'Tomada de mano derecha', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Tomadas', familia: 'Maestría 2do Dan' },
+  { id: 223, nro: 22, nombreEs: 'NUBES JUNTANDOSE (AVANZADO)', nombreEn: 'GATHERING CLOUDS (ADV)', ataque: 'Ataque de puño derecho a la cara', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Puños', familia: 'Maestría 2do Dan' },
+  { id: 224, nro: 23, nombreEs: 'BRAZOS DESTRUCTIVOS (AVANZADO)', nombreEn: 'DESTRUCTIVE TWINS (ADV)', ataque: 'Tomada de ambos hombros por delante', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Agarres y Abrazos', familia: 'Maestría 2do Dan' },
+  { id: 225, nro: 24, nombreEs: 'CARNERO QUEBRADO (AVANZADO)', nombreEn: 'BROKEN RAM (ADV)', ataque: 'Carnero atacando', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Tacles', familia: 'Maestría 2do Dan' },
+  { id: 226, nro: 25, nombreEs: 'CIRCULANDO EL HORIZONTE (AVANZADO)', nombreEn: 'CIRCLING THE HORIZON (ADV)', ataque: 'Ataque de puño derecho', tipo: 'Defensa Personal', cinturon: 'segundo-dan', categoria: 'Puños', familia: 'Maestría 2do Dan' }
 ];
 
 export const ATTACK_CATEGORIES = [
